@@ -1,6 +1,7 @@
 import getCurrentUser from '@/app/actions/getCurrentUser'
 import DesktopSidebar from './DesktopSidebar'
 import MobileFooter from './Mobilefooter'
+import { useRouter } from 'next/router'
 
 export default async function Sidebar({
   children,
@@ -8,6 +9,7 @@ export default async function Sidebar({
   children: React.ReactNode
 }) {
   const currentUser = await getCurrentUser()
+  
   return (
     <>
       <div className="h-full">

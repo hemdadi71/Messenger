@@ -3,28 +3,30 @@
 import useConversation from '@/app/hooks/useConversation'
 import useRoutes from '@/app/hooks/useRoutes'
 import MobileItem from './MobileItem'
+import { useRouter } from 'next/router'
 
 const MobileFooter = () => {
   const routes = useRoutes()
   const { isOpen } = useConversation()
-
+  console.log(location.pathname.includes('/conversations/'))
   if (isOpen) {
     return null
   }
-
   return (
     <>
-      <div className="fixed justify-between w-full bottom-0 z-40 flex items-cetner bg-white border-t-[1px] lg:hidden">
-        {routes.map(route => (
-          <MobileItem
-            key={route.label}
-            href={route.href}
-            icon={route.icon}
-            active={route.active}
-            onClick={route.onClick}
-          />
-        ))}
-      </div>
+      {!location.pathname.includes('/conversations/') && (
+        <div className="fixed justify-between w-full bottom-0 z-40 flex items-cetner bg-white border-t-[1px] lg:hidden">
+          {routes.map(route => (
+            <MobileItem
+              key={route.label}
+              href={route.href}
+              icon={route.icon}
+              active={route.active}
+              onClick={route.onClick}
+            />
+          ))}
+        </div>
+      )}
     </>
   )
 }
