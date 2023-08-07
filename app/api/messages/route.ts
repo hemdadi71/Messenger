@@ -8,22 +8,22 @@ export async function POST(request: Request) {
     const { message, image, conversationId } = body
 
     if (!currentUser?.id || !currentUser?.email) {
-      return new NextResponse('Unauthorize', { status: 401 })
+      return new NextResponse('Unauthorized', { status: 401 })
     }
 
     const newMessage = await prisma.message.create({
+      include: {
+        seen: true,
+        sender: true,
+      },
       data: {
         body: message,
         image: image,
         conversation: {
-          connect: {
-            id: conversationId,
-          },
+          connect: { id: conversationId },
         },
         sender: {
-          connect: {
-            id: currentUser.id,
-          },
+          connect: { id: currentUser.id },
         },
         seen: {
           connect: {
@@ -32,6 +32,29 @@ export async function POST(request: Request) {
         },
       },
     })
+    const updateCoversation = await prisma.conversation.update({
+      where: {
+        id: conversationId,
+      },
+      data: {
+        lastMessageAt: new Date(),
+        messages: {
+          connect: {
+            id: newMessage.id,
+          },
+        },
+      },
+      include: {
+        users: true,
+        messages: {
+          include: {
+            seen: true,
+          },
+        },
+      },
+    })
+
+    return NextResponse.json(newMessage)
   } catch (error: any) {
     console.log(error, 'ERROR_ MESSAGES')
     return new NextResponse('InternalError', { status: 500 })

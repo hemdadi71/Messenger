@@ -4,9 +4,10 @@ import Avatar from '@/app/components/Avatar'
 import useOtherUser from '@/app/hooks/useOtherUser'
 import { Conversation, User } from '@prisma/client'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { HiChevronLeft } from 'react-icons/hi'
 import { HiEllipsisHorizontal } from 'react-icons/hi2'
+import ProfileDrawer from './ProfileDrawer'
 
 interface HeaderProps {
   conversation: Conversation & {
@@ -16,7 +17,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ conversation }) => {
   const otherUser = useOtherUser(conversation)
-
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const statusText = useMemo(() => {
     if (conversation.isGroup) {
       return `${conversation.users.length} members`
@@ -26,6 +27,11 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
 
   return (
     <>
+      <ProfileDrawer
+        data={conversation}
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      />
       <div className="bg-white w-full flex border-b-[1px] sm:px-4 py-3 px-4 lg:px=6 justify-between items-center shadow-sm">
         <div className="flex gap-3 items-center">
           <Link
@@ -42,6 +48,7 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
           </div>
         </div>
         <HiEllipsisHorizontal
+          onClick={() => setDrawerOpen(true)}
           size={32}
           className="text-sky-500 cursor-pointer hover:text-sky-600 transition"
         />
